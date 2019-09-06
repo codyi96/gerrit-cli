@@ -1,6 +1,6 @@
 {
-  "name": "gerrit-cli",
-  "version": "1.0.0",
+  "name": "ger-cli",
+  "version": "1.0.1",
   "description": "Gerrit in your command lines.",
   "keywords": [
     "gerrit",
@@ -10,9 +10,9 @@
     "code-review"
   ],
   "license": "MIT",
-  "author": "Shane Smith <shane.wm.smith@gmail.com> (http://shane.smudel.ca)",
+  "author": "",
   "main": "lib/cli",
-  "repository": "shanesmith/gerrit-cli",
+  "repository": "codyi96/gerrit-cli",
   "preferGlobal": true,
   "engines": {
     "node": ">=0.12.0"
