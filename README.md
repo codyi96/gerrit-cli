@@ -1,88 +1,62 @@
-[![npm](https://img.shields.io/npm/v/gerrit-cli.svg)](https://www.npmjs.com/package/gerrit-cli)
-[![license](https://img.shields.io/github/license/shanesmith/gerrit-cli.svg)](https://github.com/shanesmith/gerrit-cli)
-[![Build Status](https://travis-ci.org/shanesmith/gerrit-cli.svg?branch=master)](https://travis-ci.org/shanesmith/gerrit-cli)
+![npm](https://img.shields.io/npm/v/ger-cli)
 
-# gerrit-cli
+# ger-cli
 
 > Gerrit in your command lines.
+> Frok from [gerrit-cli](https://github.com/shanesmith/gerrit-cli), thanks to [shanesmith](https://github.com/shanesmith).
 
-gerrit-cli provides a command-line interface to the Gerrit code review system.
-With it you can clone projects, push and checkout patches, assign reviewers,
-and perform reviews all from the comfort of your shell.
-
-It was born out of the annoyance of having to write out `git push origin
-HEAD:refs/for/branch/topic` every time I wanted to push a patch. It's now just
-`gerrit up`.
-
-
-## Install
-
-Install using NPM.
+## 安装
 
 ```sh
-$ npm install -g gerrit-cli
+$ sudo npm install -g ger-cli
 ```
 
-
-**Tab completion**
-
-Bash tab-completion is also available and can be enabled by adding the following
-line to your `.bashrc` file.
-
-```sh
-source <(gerrit completion)
-```
-_Zsh completion is not yet available..._
-
-**Requirements**
+**参考环境**
 
 - NodeJS >= 0.12
-- Git
-- SSH
+- Gerrit >= 2.12.3
 
-Tested with Gerrit 2.12.3, although most likely also works on older versions.
+## 用法
 
 
-## Usage
-
-gerrit-cli is composed of multiple sub-commands, much like git.
-
-Run `gerrit help` for a list of the commands, and `gerrit help <command>` for
-detailed help. Many commands also have shorter aliases listed in the help page.
-
-### Commands
-
+### 获取帮助
 ```
-help            View help for specified command.
-config          Manage server configurations
-projects        Display available projects on server.
-clone           Clone a project from server.
-add-remote      Add project remote for existing repository.
-install-hook    Installs the commit message hook.
-patches         List details of patches on the server for the current project.
-status          Show full details of a specific patch, including comments.
-assign          Assign reviewers to the current patch.
-up              Push patches of current topic to server for review.
-draft           Push patches of current topic to server as drafts.
-checkout        Fetch and checkout topic branch from server.
-recheckout      Re-checkout current topic.
-ssh             Run arbitrary gerrit command on server.
-review          Post a review for the current topic.
-submit          Submit the current topic for merging.
-abandon         Abandon the current topic.
-comment         Post a comment on the current topic.
-ninja           Push patch to server then immediately submit for merging.
-web             Open browser to gerrit web page for current patch.
-completion      Enables tab completion for gerrit-cli.
-topic           Create new topic branch.
-clean           Cleans out merged topic branches.
-squad           Manage squads of reviewers.
+gerrit help               获取命令列表
+gerrit help <command>     获取命令详情
+```
+
+### 命令列表
+```
+help            获取帮助
+config          配置
+projects        显示远端的项目列表
+clone           从远端拉取仓库
+add-remote      为本地库添加远端源
+install-hook    安装commit-msg hook
+patches         显示当前工程在远端的patch列表
+status          显示指定patch的详情
+assign          定义当前patch的评审者
+up              推送到评审分支
+draft           推送草稿
+checkout        检出分支
+recheckout      重新检出当前分支
+ssh             在远端执行任意Gerrit命令
+review          提交评审
+submit          正式提交
+abandon         废弃提交
+comment         提交评论
+ninja           推送并立即正式提交
+web             打开当前patch的网页
+completion      启用自动补全
+topic           创建新分支
+clean           清空已经合并的分支
+squad           管理评审组
 ```
 
 
-### Feature Walkthrough
+### 最佳实践
 
-First we need to tell gerrit-cli about our server.
+基础配置
 
 ```sh
 $ gerrit config
@@ -93,8 +67,7 @@ $ gerrit config
 # ? User george
 ```
 
-Now let's clone a project. Note how the commit-msg hook is automatically
-installed at the end.
+拉取项目
 
 ```sh
 $ gerrit clone killer-app
@@ -105,14 +78,7 @@ $ gerrit clone killer-app
 # Installing commit-msg hook...
 ```
 
-Now we want to start working on a topic branch. 
-
-gerrit-cli has one requirement in order to track your work: your local topic
-branch needs to track the upstream branch that it is intended to merge
-into.
-
-We'll use the `topic` command here, which will simply create a branch that will
-track the current branch's upstream.
+创建分支
 
 ```sh
 $ gerrit topic lasers
@@ -120,9 +86,7 @@ $ gerrit topic lasers
 # Branch lasers set up to track remote branch master from origin.
 ```
 
-`gerrit-cli` commands act on the current topic branch, which is now "lasers".
-
-It's time to crank out some code.
+修改并提交代码
 
 ```sh
 $ vim shark.js
@@ -132,7 +96,7 @@ $ vim shark.js
 $ git commit -m "Added fricken lasers"
 ```
 
-Let's create a patch for review on the server for this commit.
+为此次提交创建patch并推送到评审分支
 
 ```sh
 $ gerrit up
@@ -146,8 +110,7 @@ $ gerrit up
 #  * [new branch]      HEAD -> refs/for/master/lasers
 ```
 
-Now we'll want to add some reviewers. Let's say that we know we'll often be
-assigning the same set of reviewers, we can create a squad to group them.
+定义一个评审组
 
 ```sh
 $ gerrit squad set dudes jmartin cbush
@@ -161,9 +124,7 @@ $ gerrit assign @dudes slevasseur
 # Assigned reviewer slevasseur
 ```
 
-Let's finish up by reviewing someone else's patch. We can view what patches are
-on the server with the `patches` command, we'll add some filter flags for our
-use right now.
+查看远端的patch
 
 ```sh
 $ gerrit patches --not-reviewed --assigned
@@ -174,7 +135,7 @@ $ gerrit patches --not-reviewed --assigned
 # 713705  soleil  master  jmartin  Sep 3rd
 ```
 
-We'll check out the first patch.
+检出patch
 
 ```sh
 $ gerrit checkout fixBug
@@ -183,8 +144,7 @@ $ gerrit checkout fixBug
 # Refspec is refs/changes/56/123456/1
 ```
 
-Now that we have the topic branch checked out we can run our tests on it, then
-leave our review.
+评审代码
 
 ```sh
 $ gerrit review 1 -1 "Bug is fixed, but needs more cow bells."
@@ -192,17 +152,10 @@ $ gerrit review 1 -1 "Bug is fixed, but needs more cow bells."
 # Reviews have been posted successfully.
 ```
 
-If we want to leave an inline review comment that can't be done through this
-tool, however you can quickly navigate to the web interface.
+如果需要评论某行代码，可以通过下面的命令快速打开patch对应的网页
 
 ```sh
 $ gerrit web
 ```
 
-This concludes the walkthrough! If your legs are tired why don't you sit down
-and read through `gerrit help` for more options and advanced use.
-
-
-# License
-
-Copyright (c) Shane Smith. Distributed under the MIT license.
+更多用法参见`gerrit help`
